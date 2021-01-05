@@ -67,7 +67,7 @@ def ussd_callback():
     elif (len(option) == 3 and option[0] == '2' and option[1] == '2'):
         conta = option[2]
         r = requests.get('https://api-prod.solarworksmalawi.lamt.app/lamt/account/?search=paymentReference==' +
-                         conta, auth=('solarworksmalawi', 'A3BCb6WvtdwJpNNW'))
+                         conta, auth=('', ''))
 
         accounts = json.loads(r.text, object_hook=lambda d: SimpleNamespace(**d))
         for accountStatus in accounts:
