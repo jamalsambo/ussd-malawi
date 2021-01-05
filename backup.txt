@@ -1,0 +1,30 @@
+
+
+@app.route('/', methods=['POST', 'GET'])
+def ussd_callback():
+    global response
+    session_id = request.values.get("sessionId", None)
+    service_code = request.values.get("serviceCode", None)
+    phone_number = request.values.get("phoneNumber", None)
+    text = request.values.get("text", "default")
+
+    if text == '':
+        response  = "CON BEM VINDO AO MENU SW \n Escolha uma opcao \n"
+        response += "1. Efectuar o pagamento \n"
+        response += "2. Menu atendimento SW"
+
+    elif text == '1':
+        response = "CON Por favor, insira o numero de telefone da sua conta Solar-Works: \n"
+        response = "CON Por favor, insira o numero da sua conta Solar-Works: \n" + text
+
+
+    elif text == '2':
+        response = "Selecionar Operacao \n"
+        response += "1. Codigos de recarregamento \n"
+        response += "2. Saldo e data de bloqueio \n"
+        response += "3. Txunar energia \n"
+
+    return response
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=80)
