@@ -2,7 +2,6 @@ from flask import Flask, request
 import requests
 import json
 import requests
-from types import SimpleNamespace
 
 app = Flask(__name__)
 
@@ -67,19 +66,19 @@ def ussd_callback():
     elif (len(option) == 3 and option[0] == '2' and option[1] == '2'):
         conta = option[2]
         r = requests.get('https://api-prod.solarworksmalawi.lamt.app/lamt/account/?search=paymentReference==' +
-                         conta, auth=('', ''))
+                         conta, auth=('solarworksmalawi', 'A3BCb6WvtdwJpNNW'))
 
-        accounts = json.loads(r.text, object_hook=lambda d: SimpleNamespace(**d))
+        accounts = json.loads(r.text)
         for accountStatus in accounts:
            
             response = "END Your account balance and the following\n"
-            response += "Last Payment At: " + str(accountStatus.accountStatus.lastPaymentAt) + "\n"
-            response += "Expected Amount Paid: " + str(accountStatus.accountStatus.expectedAmountPaid) + "\n"
-            response += "Total Payment Received: " + str(accountStatus.accountStatus.totalPaymentReceived) + "\n"
-            response += "Total Value Received: " + str(accountStatus.accountStatus.totalValueReceived) + "\n"
-            response += "Account Balance: " + str(accountStatus.accountStatus.accountBalance) + "\n"
-            response += "Last Payment At: " + str(accountStatus.accountStatus.lastPaymentAmount) + "\n" 
-            response += "Account Balance Days: " + str(accountStatus.accountStatus.accountBalanceDays) + "\n"
+            response += "Last Payment At: " + str(accountStatus['accountStatus']['lastPaymentAt']) + "\n"
+            response += "Expected Amount Paid: " + str(accountStatus['accountStatus']['expectedAmountPaid']) + "\n"
+            response += "Total Payment Received: " + str(accountStatus['accountStatus']['totalPaymentReceived']) + "\n"
+            response += "Total Value Received: " + str(accountStatus['accountStatus']['totalValueReceived']) + "\n"
+            response += "Account Balance: " + str(accountStatus['accountStatus']['accountBalance']) + "\n"
+            response += "Last Payment At: " + str(accountStatus['accountStatus']['lastPaymentAmount']) + "\n" 
+            response += "Account Balance Days: " + str(accountStatus['accountStatus']['accountBalanceDays']) + "\n"
     
     return response
 
