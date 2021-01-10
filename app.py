@@ -7,6 +7,7 @@ app = Flask(__name__)
 
 response = ""
 
+
 @app.route('/', methods=['POST', 'GET'])
 def ussd_callback():
     global response
@@ -65,7 +66,7 @@ def ussd_callback():
     elif (len(option) == 3 and option[0] == '2' and option[1] == '2'):
         conta = option[2]
         r = requests.get('https://api-prod.solarworksmalawi.lamt.app/lamt/account/?search=paymentReference==' +
-                         conta, auth=('solarworksmalawi', 'A3BCb6WvtdwJpNNW'))
+                         conta, auth=('', ''))
 
         accounts = json.loads(r.text)
         for accountStatus in accounts:
@@ -82,4 +83,4 @@ def ussd_callback():
     return response
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0', port=80)
