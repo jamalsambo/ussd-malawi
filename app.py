@@ -53,10 +53,29 @@ def ussd_callback():
         response += "2. Balance \n"
 
     elif (len(option) == 2 and option[0] == '2' and option[1] == '1'):
+        response = "CON Enter the account number\n"
+    
+    elif (len(option) == 3 and option[0] == '2' and option[1] == '1'):
+        recharge = ""
+        days = ""
+        accountId = option[2]
+        r1 = requests.get('https://api-prod.solarworksmalawi.lamt.app/lamt/account/'+ accountId +'/asset', auth=('solarworksmalawi', 'A3BCb6WvtdwJpNNW'))
+        assetRespose = json.loads(r1.content)
+
+        for asset in assetRespose:
+            assetId = asset['uuid']
+
+            r2 = requests.get('https://api-prod.solarworksmalawi.lamt.app/shs-hub/asset/'+ assetId +'/token/?lastToken=true', auth=('solarworksmalawi', 'A3BCb6WvtdwJpNNW'))
+        
+            fullToken = json.loads(r2.content)
+
+            for lastToken in fullToken:
+                recharge = lastToken['token']
+                days = lastToken['duration']
+
         response = "END Latest refills \n"
-        response += "1234-4569-7895-5698-7895 \n"
-        response += "1234-4569-7895-5698-7895 \n"
-        response += "1234-4569-7895-5698-7895 \n"
+        response += "recharge: " + str(recharge) + "\n"
+        response += "Days: " + str(days)
 
     elif (len(option) == 2 and option[0] == '2' and option[1] == '2'):
         response = "CON Enter the account number\n"
