@@ -21,28 +21,6 @@ def ussd_callback():
         # response += "1. Make payment \n"
         response += "2. SW service menu"
 
-    elif (len(option) == 1 and option[0] == '1'):
-        # number = {'numero': option[0]}
-        # r =requests.post('http://localhost:3000/api/account/router-text/', data=number)
-        # resposta = json.loads(r.text)
-        response = "CON Por favor, insira o numero de telefone da sua conta Solar-Works:\n "
-
-    elif (len(option) == 2 and option[0] == '1'):
-        response = "CON Por favor insira um numero de conta Solar-Works"
-
-    elif (len(option) == 3 and option[0] == '1'):
-        response = "CON Por favor insira o valor da compra"
-
-    elif (len(option) == 4 and option[0] == '1'):
-        phone = option[1]
-        conta = option[2]
-        valor = option[3]
-
-        response = "CON Tens a certeza que queres pagar a energia no valor de " + \
-            valor+" para a conta "+conta+" atravez do numero "+phone+" \n"
-        response += "1. Confirmar \n"
-        response += "2. Cancelar"
-
     elif (len(option) == 5 and option[0] == '1'):
         codigo = "5685-5584-5695-5898-5584"
         response = "END Pagamento efectuado com sucesso, o seu codigo de recarga e: " + codigo
