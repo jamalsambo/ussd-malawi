@@ -63,22 +63,18 @@ def ussd_callback():
         r = requests.get('https://api-prod.solarworksmalawi.lamt.app/lamt/account/?search=paymentReference==' +
                          conta, auth=('solarworksmalawi', 'A3BCb6WvtdwJpNNW'))
 
+        num_format = "{:,}".format
+
         accounts = json.loads(r.text)
         for accountStatus in accounts:
-
-            dataPayment = accountStatus['accountStatus']['lastPaymentAt']
-            date_time_obj = datetime.datetime.strptime(dataPayment, '%Y-%m-%dT%H:%M:%S.000+0000')
-
-            num_format = "{:,}".format
-           
             response = "END Your account balance and the following\n"
-            response += "Last Payment At: " + str(date_time_obj) + "\n"
             response += "Expected Amount Paid: " + str(num_format(accountStatus['accountStatus']['expectedAmountPaid'])) + "\n"
             response += "Total Payment Received: " + str(num_format(accountStatus['accountStatus']['totalPaymentReceived'])) + "\n"
             response += "Total Value Received: " + str(num_format(accountStatus['accountStatus']['totalValueReceived'])) + "\n"
             response += "Account Balance: " + str(num_format(accountStatus['accountStatus']['accountBalance'])) + "\n"
             response += "Last Payment At: " + str(num_format(accountStatus['accountStatus']['lastPaymentAmount'])) + "\n" 
             response += "Account Balance Days: " + str(accountStatus['accountStatus']['accountBalanceDays']) + "\n"
+            response += "Status: " + accountStatus['accountStatus']['status']
     
     return response
 
