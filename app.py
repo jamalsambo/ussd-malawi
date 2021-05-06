@@ -72,7 +72,7 @@ def ussd_callback():
             response += "2.	Masiku otsala: " + str(num_format(accountStatus['accountStatus']['numberOfRemainingInstallments'])) + "\n"
             response += "3.	Accounts Status: " + accountStatus['accountStatus']['status'] + "\n"
             response += "4.	Ndalama zalipilidwa: " + str(num_format(accountStatus['accountStatus']['lastPaymentAmount'])) + "\n"
-            # response += "5.	Tsiku lolipila: " + pd.to_datetime(accountStatus['accountStatus']['lastPaymentAt'])  + "\n" 
+            # response += "5.	Tsiku lolipila: " + accountStatus['accountStatus']['lastPaymentAt']  + "\n" 
             response += "5.	Ndalama zonse zalipilidwa: " + str(num_format(accountStatus['accountStatus']['totalPaymentReceived'])) + "\n"
             response += "6.	Ndalama zatsala kulipila: " + str(num_format(accountStatus['accountStatus']['accountBalance']))
 
