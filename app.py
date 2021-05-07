@@ -74,7 +74,7 @@ def ussd_callback():
             response += "4.	Ndalama zalipilidwa: " + str(num_format(accountStatus['accountStatus']['lastPaymentAmount'])) + "\n"
             # response += "5.	Tsiku lolipila: " + accountStatus['accountStatus']['lastPaymentAt']  + "\n" 
             response += "5.	Ndalama zonse zalipilidwa: " + str(num_format(accountStatus['accountStatus']['totalPaymentReceived'])) + "\n"
-            response += "6.	Ndalama zatsala kulipila: " + str(num_format(accountStatus['payplan']['initialFaceValueOfReceivables']))
+            response += "6.	Ndalama zatsala kulipila: " + str(num_format(accountStatus['accountStatus']['faceValueReceivables']))
 
     
     return response
