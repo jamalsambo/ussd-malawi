@@ -34,13 +34,13 @@ def ussd_callback():
         conta = option[2]
         token = ""
         r = requests.get('https://payg.angazadesign.com/data/accounts_by_number/' +
-                         conta, auth=('jamal.sambo', 'eclipse104100'))
+                         conta, auth=())
         accounts_data = json.loads(r.text)
         account_cliente_qiq = accounts_data['qid']
 
         url_qid = 'https://payg.angazadesign.com/data/activations'
         PARAMS = {'account_qid': account_cliente_qiq}
-        r = requests.get(url=url_qid, params=PARAMS, auth=('jamal.sambo', 'eclipse104100'))
+        r = requests.get(url=url_qid, params=PARAMS, auth=())
         data = json.loads(r.text)
 
         arr_keycode = data['_embedded']['item']
@@ -63,13 +63,13 @@ def ussd_callback():
         conta = option[2]
 
         r = requests.get('https://payg.angazadesign.com/data/accounts_by_number/' +
-                         conta, auth=('jamal.sambo', 'eclipse104100'))
+                         conta, auth=())
         accounts_data = json.loads(r.text)
         # print(accounts_data)
         account_cliente_id = accounts_data['client_qids'][0]
 
         accounts_request_cliente = requests.get('https://payg.angazadesign.com/data/clients/' +
-                                                account_cliente_id, auth=('jamal.sambo', 'eclipse104100'))
+                                                account_cliente_id, auth=())
         cliente_data = json.loads(accounts_request_cliente.text)
 
         cliente_name = cliente_data['name']
