@@ -1,5 +1,6 @@
+import json
+import requests
 from flask import Flask, request
-import json, datetime, requests
 
 app = Flask(__name__)
 
@@ -16,68 +17,76 @@ def ussd_callback():
 
     option = text.split("*")
 
-    if(len(option) == 1 and option[0] == ''):
+    if len(option) == 1 and option[0] == '':
         response = "CON Takulandirani ku Solar Works Malawi \n Sankhani: \n"
         # response += "1. Make payment \n"
         response += "2. SW Menu"
 
-    elif (len(option) == 5 and option[0] == '1'):
-        codigo = "5685-5584-5695-5898-5584"
-        response = "END Pagamento efectuado com sucesso, o seu codigo de recarga e: " + codigo
-
-    elif (len(option) == 1 and option[0] == '2'):
+    elif len(option) == 1 and option[0] == '2':
         response = "CON Sankhani: \n"
         response += "1. Tokeni \n"
         response += "2. Ndalama Zotsala \n"
 
-    elif (len(option) == 2 and option[0] == '2' and option[1] == '1'):
-        response = "CON Lowetsani reference number\n"
-    
-    elif (len(option) == 3 and option[0] == '2' and option[1] == '1'):
-        recharge = ""
-        days = ""
-        accountId = option[2]
-        r1 = requests.get('https://api-prod.solarworksmalawi.lamt.app/lamt/account/'+ accountId +'/asset', auth=('solarworksmalawi', 'A3BCb6WvtdwJpNNW'))
-        assetRespose = json.loads(r1.content)
-
-        for asset in assetRespose:
-            assetId = asset['uuid']
-
-            r2 = requests.get('https://api-prod.solarworksmalawi.lamt.app/shs-hub/asset/'+ assetId +'/token/?lastToken=true', auth=('solarworksmalawi', 'A3BCb6WvtdwJpNNW'))
-        
-            fullToken = json.loads(r2.content)
-
-            for lastToken in fullToken:
-                recharge = lastToken['token']
-                days = lastToken['duration']
-
-        response = "END Latest Tokeni \n"
-        response += "Tokeni: " + str(recharge) + "\n"
-        response += "Masiku: " + str(days)
-
-    elif (len(option) == 2 and option[0] == '2' and option[1] == '2'):
+    elif len(option) == 2 and option[0] == '2' and option[1] == '1':
         response = "CON Lowetsani reference number\n"
 
-    elif (len(option) == 3 and option[0] == '2' and option[1] == '2'):
+    elif len(option) == 3 and option[0] == '2' and option[1] == '1':
         conta = option[2]
-        r = requests.get('https://api-prod.solarworksmalawi.lamt.app/lamt/account/?search=paymentReference==' +
-                         conta, auth=('solarworksmalawi', 'A3BCb6WvtdwJpNNW'))
+        token = ""
+        r = requests.get('https://payg.angazadesign.com/data/accounts_by_number/' +
+                         conta, auth=('jamal.sambo', 'eclipse104100'))
+        accounts_data = json.loads(r.text)
+        account_cliente_qiq = accounts_data['qid']
 
-        num_format = "{:,}".format
+        url_qid = 'https://payg.angazadesign.com/data/activations'
+        PARAMS = {'account_qid': account_cliente_qiq}
+        r = requests.get(url=url_qid, params=PARAMS, auth=('jamal.sambo', 'eclipse104100'))
+        data = json.loads(r.text)
 
-        accounts = json.loads(r.text)
-        for accountStatus in accounts:
-            response = "END Zotsatila za akaunti yanu:\n"
-            response += "1.	Dzina: " + accountStatus['customer']['name'] + "\n"
-            response += "2.	Masiku otsala: " + str(num_format(accountStatus['accountStatus']['numberOfRemainingInstallments'])) + "\n"
-            response += "3.	Accounts Status: " + accountStatus['accountStatus']['status'] + "\n"
-            response += "4.	Ndalama zalipilidwa: " + str(num_format(accountStatus['accountStatus']['lastPaymentAmount'])) + "\n"
-            # response += "5.	Tsiku lolipila: " + accountStatus['accountStatus']['lastPaymentAt']  + "\n" 
-            response += "5.	Ndalama zonse zalipilidwa: " + str(num_format(accountStatus['accountStatus']['totalPaymentReceived'])) + "\n"
-            response += "6.	Ndalama zatsala kulipila: " + str(num_format(accountStatus['accountStatus']['faceValueReceivables']))
+        arr_keycode = data['_embedded']['item']
 
-    
+        for keycode in arr_keycode:
+            lasts_tokens = keycode['keycode']
+            if lasts_tokens:
+                token = lasts_tokens
+            else:
+                token = "No Tokin"
+
+        response = "END Tokeni:\n"
+        response += token
+
+    elif len(option) == 2 and option[0] == '2' and option[1] == '2':
+        response = "CON Lowetsani reference number\n"
+
+    # account query condition
+    elif len(option) == 3 and option[0] == '2' and option[1] == '2':
+        conta = option[2]
+
+        r = requests.get('https://payg.angazadesign.com/data/accounts_by_number/' +
+                         conta, auth=('jamal.sambo', 'eclipse104100'))
+        accounts_data = json.loads(r.text)
+        # print(accounts_data)
+        account_cliente_id = accounts_data['client_qids'][0]
+
+        accounts_request_cliente = requests.get('https://payg.angazadesign.com/data/clients/' +
+                                                account_cliente_id, auth=('jamal.sambo', 'eclipse104100'))
+        cliente_data = json.loads(accounts_request_cliente.text)
+
+        cliente_name = cliente_data['name']
+        day_last_downpay = accounts_data['down_payment_days_included']
+        accounts_status = accounts_data['status']
+        days_disable = accounts_data['cumulative_days_disabled']
+        total_pay_amount = accounts_data['total_paid']
+
+        response = "END Zotsatila za akaunti yanu:\n"
+        response += "1.	Name: " + str(cliente_name) + "\n"
+        response += "2.	Instalations Day Remaining: " + str(day_last_downpay) + "\n"
+        response += "3.	Account Status: " + str(accounts_status) + "\n"
+        response += "4.	Disable Days: " + str(days_disable) + "\n"
+        response += "5.	Total Payment: " + str(total_pay_amount) + "\n"
+
     return response
+
 
 if __name__ == "__main__":
     app.run()
